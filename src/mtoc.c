@@ -41,14 +41,18 @@ int main(int argc, char **argv)
 	if (!fp) die("fopen");
 
 	// parse it, finding the headers and levels of depth, building a tree along the way.
-	size_t size = 32;
-	struct toc_item headers[size];
+	size_t num_items = 32;
+	struct toc_item *headers = malloc(num_items * sizeof(struct toc_item));
 	int num_headers = 0;
 	char *line = NULL;
 	size_t linecap = 0;
 	ssize_t linelen;
 	while ((linelen = getline(&line, &linecap, fp)) != -1) {
 		if (line[0] == '#') {
+			if (num_headers == num_items) {
+				num_items *= 2;
+				headers = realloc(headers, num_items * sizeof(struct toc_item));
+			}
 			struct toc_item *item = malloc(sizeof(struct toc_item));
 			item->depth = get_depth(line);
 			item->contents = malloc(sizeof(char) * linelen);
