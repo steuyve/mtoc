@@ -23,6 +23,20 @@ int get_depth(char *line)
 	return depth - 1;
 }
 
+char *get_heading(char *line, ssize_t length, int depth)
+{
+	char *heading;
+	heading = malloc((length - depth - 2) * sizeof(char));
+	if (!heading) die("malloc");
+	heading = strcpy(heading, line + depth + 2);
+	length = length - depth - 3;
+	while (heading[length] == '\n' || heading[length] == ' ' || heading[length] == '\t') {
+		heading[length] = '\0';
+		length--;
+	}
+	return heading;
+}
+
 void show_item(struct toc_item *item)
 {
 	printf("Depth: %d; Contents: %s", item->depth, item->contents);
@@ -36,13 +50,14 @@ int main(int argc, char **argv)
 	}
 
 	printf("Opening file: %s...\n", argv[1]);
-	// read in a markdown file as input.
+	// read-in a file as input.
 	FILE *fp = fopen(argv[1], "r");
 	if (!fp) die("fopen");
 
-	// parse it, finding the headers and levels of depth, building a tree along the way.
+	// finding the headers and levels of depth.
 	size_t num_items = 32;
 	struct toc_item *headers = malloc(num_items * sizeof(struct toc_item));
+	if (!headers) die("malloc");
 	int num_headers = 0;
 	char *line = NULL;
 	size_t linecap = 0;
@@ -55,21 +70,37 @@ int main(int argc, char **argv)
 				if (!headers) die("realloc");
 			}
 			struct toc_item *item = malloc(sizeof(struct toc_item));
+			if (!item) die("malloc");
 			item->depth = get_depth(line);
-			item->contents = malloc(sizeof(char) * linelen);
-			strcpy(item->contents, line);
+			item->contents = malloc(linelen * sizeof(char));
+			if (!(item->contents)) die("malloc");
+			item->contents = get_heading(line, linelen, item->depth);
 			headers[num_headers] = *item;
 			num_headers++;
 		}
 	}
 	free(line);
 
+	printf("Found the following header lines:\n");
 	for (int i = 0; i < num_headers; i++) {
 		show_item(&headers[i]);
+		printf("\n");
 	}
 
 	// output the table of contents.
+	printf("OUTPUT:\n\n");
+	printf("# Table of Contents\n");
+	for (int i = 0; i < num_headers; i++) {
+		for (int j = 0; j < headers[i].depth; j++) {
+			printf("\t");
+		}
+		printf("[%s]\n", headers[i].contents);
+	}
+	printf("\n\n");
+	
+	// close the file.
 	printf("Closing file: %s...\n", argv[1]);
 	fclose(fp);
+	free(headers);
 	return 0;
 }
