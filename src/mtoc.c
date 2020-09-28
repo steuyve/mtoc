@@ -42,6 +42,17 @@ void show_item(struct toc_item *item)
 	printf("Depth: %d; Contents: %s", item->depth, item->contents);
 }
 
+void output_toc(struct toc_item *headers, int num_headers)
+{
+	printf("# Table of Contents\n");
+	for (int i = 0; i < num_headers; i++) {
+		for (int j = 0; j < headers[i].depth; j++) {
+			printf("\t");
+		}
+		printf("%d. %s\n", (i + 1), headers[i].contents);
+	}
+}
+
 int main(int argc, char **argv)
 {
 	if (argc != 2) {
@@ -87,17 +98,9 @@ int main(int argc, char **argv)
 		printf("\n");
 	}
 
-	// output the table of contents.
-	printf("OUTPUT:\n\n");
-	printf("# Table of Contents\n");
-	for (int i = 0; i < num_headers; i++) {
-		for (int j = 0; j < headers[i].depth; j++) {
-			printf("\t");
-		}
-		printf("[%s]\n", headers[i].contents);
-	}
-	printf("\n\n");
-	
+	// output table of contents
+	output_toc(headers, num_headers);
+
 	// close the file.
 	printf("Closing file: %s...\n", argv[1]);
 	fclose(fp);
