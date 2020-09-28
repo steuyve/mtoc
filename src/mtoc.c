@@ -52,8 +52,8 @@ int main(int argc, char **argv)
 			if (num_headers == num_items) {
 				num_items *= 2;
 				headers = realloc(headers, num_items * sizeof(struct toc_item));
+				if (!headers) die("realloc");
 			}
-			if (!headers) die("realloc");
 			struct toc_item *item = malloc(sizeof(struct toc_item));
 			item->depth = get_depth(line);
 			item->contents = malloc(sizeof(char) * linelen);
