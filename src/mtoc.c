@@ -3,8 +3,6 @@
 #include <string.h>
 #include <unistd.h>
 
-int links = 0;
-
 struct toc_item {
 	char *contents;
 	char *anchor;
@@ -97,11 +95,12 @@ void output_toc(struct toc_item *headers, int num_headers)
 
 int main(int argc, char **argv)
 {
+	int lflag = 0;
 	int opt;
 	while ((opt = getopt(argc, argv, "l")) != -1) {
 		switch (opt) {
 			case 'l':
-				links = 1;
+				lflag = 1;
 				break;
 			default:
 				fprintf(stderr, "Usage: %s [-l] filename\n", argv[0]);
