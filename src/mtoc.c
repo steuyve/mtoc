@@ -104,7 +104,6 @@ void set_list_nums(struct toc_item *headers, int num_headers)
 
 void output_toc(struct out_buf *ob, struct toc_item *headers, int num_headers, int lflag)
 {
-	outbuf_append(ob, "# Table of Contents\n", 20);
 	for (int i = 0; i < num_headers; i++) {
 		for (int j = 0; j < headers[i].depth; j++) {
 			outbuf_append(ob, "\t", 1);
@@ -114,7 +113,7 @@ void output_toc(struct out_buf *ob, struct toc_item *headers, int num_headers, i
 			size_t len = snprintf(out, sizeof(out), "%d. %s\n", headers[i].list_num, headers[i].contents);
 			outbuf_append(ob, out, len);
 		} else if (lflag == 1) {
-			char out[3 * strlen(headers[i].contents)];
+			char out[4 * strlen(headers[i].contents)];
 			size_t len = snprintf(out, sizeof(out), "%d. [%s](#%s)\n", headers[i].list_num, headers[i].contents, headers[i].anchor);
 			outbuf_append(ob, out, len);
 		}
