@@ -97,37 +97,8 @@ void output_toc(struct toc_item *headers, int num_headers, int lflag)
 	}
 }
 
-int main(int argc, char **argv)
+void process_file(FILE *fp, int lflag, int dflag)
 {
-	int lflag = 0;
-	int dflag = 6;
-	int opt;
-	while ((opt = getopt(argc, argv, "ld:")) != -1) {
-		switch (opt) {
-			case 'l':
-				lflag = 1;
-				break;
-			case 'd':
-				dflag = atoi(optarg);
-				break;
-			default:
-				fprintf(stderr, "Usage: %s [-l] filename\n", argv[0]);
-				exit(EXIT_FAILURE);
-		}
-	}
-
-	/*
-	if (argc != 2) {
-		printf("error incorrect number of arguments: exactly one filename to process expected.");
-		return 1;
-	}
-	*/
-
-	printf("Opening file: %s...\n", argv[optind]);
-	// read-in a file as input.
-	FILE *fp = fopen(argv[optind], "r");
-	if (!fp) die("fopen");
-
 	// finding the headers and levels of depth.
 	size_t num_items = 32;
 	struct toc_item *headers = malloc(num_items * sizeof(struct toc_item));
@@ -153,19 +124,47 @@ int main(int argc, char **argv)
 	}
 	free(line);
 
-	//printf("Found the following header lines:\n");
-	//for (int i = 0; i < num_headers; i++) {
-	//	show_item(&headers[i]);
-	//	printf("\n");
-	//}
-
 	// output table of contents
 	set_list_nums(headers, num_headers);
 	output_toc(headers, num_headers, lflag);
 
-	// close the file.
-	printf("Closing file: %s...\n", argv[optind]);
-	fclose(fp);
 	free(headers);
+	return;
+}
+
+int main(int argc, char **argv)
+{
+	// parse arguments.
+	int lflag = 0;
+	int dflag = 6;
+	int opt;
+	while ((opt = getopt(argc, argv, "ld:")) != -1) {
+		switch (opt) {
+			case 'l':
+				lflag = 1;
+				break;
+			case 'd':
+				dflag = atoi(optarg);
+				break;
+			default:
+				fprintf(stderr, "Usage: %s [-ld] filename ...\n", argv[0]);
+				exit(EXIT_FAILURE);
+		}
+	}
+
+	for (int index = optind; index < argc; index++) {
+		// read-in a file as input.
+		printf("Opening file: %s...\n", argv[index]);
+		FILE *fp = fopen(argv[index], "r");
+		if (!fp) die("fopen");
+
+		// process the file.
+		process_file(fp, lflag, dflag);
+
+		// close the file.
+		printf("Closing file: %s...\n", argv[index]);
+		fclose(fp);
+	}
+
 	exit(EXIT_SUCCESS);
 }
