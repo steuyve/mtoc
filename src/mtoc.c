@@ -8,6 +8,7 @@ struct toc_item {
 	char *anchor;
 	int depth;
 	int list_num;
+	int contents_length;
 };
 
 void die(const char *s)
@@ -26,7 +27,7 @@ int get_depth(char *line)
 	return depth - 1;
 }
 
-char *get_heading(char *line, ssize_t length, int depth)
+void set_heading(struct toc_item *item, char *line, ssize_t length, int depth)
 {
 	char *heading = malloc((length - depth - 1) * sizeof(char));
 	if (!heading) die("malloc");
@@ -36,7 +37,9 @@ char *get_heading(char *line, ssize_t length, int depth)
 		heading[length] = '\0';
 		length--;
 	}
-	return heading;
+
+	item->contents = heading;
+	item->contents_length = length;
 }
 
 char *gen_anchor(char *heading, ssize_t length)
@@ -117,7 +120,8 @@ void process_file(FILE *fp, int lflag, int dflag)
 			int depth = get_depth(line);
 			if (depth + 1 > dflag) continue;
 			headers[num_headers].depth = depth;
-			headers[num_headers].contents = get_heading(line, linelen, headers[num_headers].depth);
+			set_heading(&headers[num_headers], line, linelen, headers[num_headers].depth);
+			printf("%d: %s\n", headers[num_headers].contents_length, headers[num_headers].contents);
 			headers[num_headers].anchor = gen_anchor(headers[num_headers].contents, linelen);
 			num_headers++;
 		}
