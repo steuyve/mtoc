@@ -28,7 +28,7 @@ int get_depth(char *line)
 
 char *get_heading(char *line, ssize_t length, int depth)
 {
-	char *heading = malloc((length - depth - 2) * sizeof(char));
+	char *heading = malloc((length - depth - 1) * sizeof(char));
 	if (!heading) die("malloc");
 	heading = strcpy(heading, line + depth + 2);
 	length = length - depth - 3;
@@ -43,7 +43,10 @@ char *gen_anchor(char *heading, ssize_t length)
 {
 	char *anchor = malloc(length * sizeof(char));
 	if (!anchor) die("malloc");
-	int i;
+	for (int j = 0; j < length; j++) {
+		anchor[j] = '\0';
+	}
+	int i = 0;
 	while (heading[i] != '\0') {
 		if (heading[i] == ' ') {
 			anchor[i] = '-';
@@ -89,6 +92,8 @@ void output_toc(struct toc_item *headers, int num_headers, int lflag)
 		} else if (lflag == 1) {
 			printf("%d. [%s](#%s)\n", headers[i].list_num, headers[i].contents, headers[i].anchor);
 		}
+		free(headers[i].contents);
+		free(headers[i].anchor);
 	}
 }
 
