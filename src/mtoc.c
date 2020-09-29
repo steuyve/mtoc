@@ -122,7 +122,7 @@ void output_toc(struct out_buf *ob, struct toc_item *headers, int num_headers, i
 	}
 }
 
-void process_file(FILE *fp, int lflag, int dflag)
+void process_file(FILE *fp, struct out_buf *ob, int lflag, int dflag)
 {
 	// finding the headers and levels of depth.
 	size_t num_items = 32;
@@ -150,13 +150,11 @@ void process_file(FILE *fp, int lflag, int dflag)
 	free(line);
 
 	// output table of contents
-	struct out_buf ob = {NULL, 0};
 	set_list_nums(headers, num_headers);
-	output_toc(&ob, headers, num_headers, lflag);
-	write(STDOUT_FILENO, ob.buffer, ob.len);
-	outbuf_free(&ob);
+	output_toc(ob, headers, num_headers, lflag);
 
 	free(headers);
+
 	return;
 }
 
@@ -190,7 +188,10 @@ int main(int argc, char **argv)
 		if (!fp) die("fopen");
 
 		// process the file.
-		process_file(fp, lflag, dflag);
+		struct out_buf ob = {NULL, 0};
+		process_file(fp, &ob, lflag, dflag);
+		write(STDOUT_FILENO, ob.buffer, ob.len);
+		outbuf_free(&ob);
 
 		// close the file.
 		fclose(fp);
