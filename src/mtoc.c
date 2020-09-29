@@ -26,7 +26,7 @@ int get_depth(char *line)
 	return depth - 1;
 }
 
-void set_heading(struct toc_item *item, char *line, ssize_t length, int depth)
+char *get_heading(char *line, ssize_t length, int depth)
 {
 	char *heading = malloc((length - depth - 1) * sizeof(char));
 	if (!heading) die("malloc");
@@ -37,7 +37,7 @@ void set_heading(struct toc_item *item, char *line, ssize_t length, int depth)
 		length--;
 	}
 
-	item->contents = heading;
+	return heading;
 }
 
 char *gen_anchor(char *heading, ssize_t length)
@@ -118,7 +118,7 @@ void process_file(FILE *fp, int lflag, int dflag)
 			int depth = get_depth(line);
 			if (depth + 1 > dflag) continue;
 			headers[num_headers].depth = depth;
-			set_heading(&headers[num_headers], line, linelen, headers[num_headers].depth);
+			headers[num_headers].contents = get_heading(line, linelen, headers[num_headers].depth);
 			headers[num_headers].anchor = gen_anchor(headers[num_headers].contents, linelen);
 			num_headers++;
 		}
