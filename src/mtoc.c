@@ -183,7 +183,6 @@ int main(int argc, char **argv)
 
 	for (int index = optind; index < argc; index++) {
 		// read-in a file as input.
-		printf("Opening file: %s...\n", argv[index]);
 		FILE *fp = fopen(argv[index], "r");
 		if (!fp) die("fopen");
 
@@ -191,7 +190,6 @@ int main(int argc, char **argv)
 		process_file(fp, lflag, dflag);
 
 		// close the file.
-		printf("Closing file: %s...\n", argv[index]);
 		fclose(fp);
 	}
 
