@@ -16,6 +16,27 @@ void die(const char *s)
 	exit(1);
 }
 
+struct out_buf {
+	char *buffer;
+	size_t len;
+};
+
+void outbuf_append(struct out_buf *ob, const char *s, size_t length)
+{
+	char *new = realloc(ob->buffer, ob->len + length);
+	if (!new) die("realloc");
+
+	memcpy(&new[ob->len], s, length);
+	ob->buffer = new;
+	ob->len += length;
+}
+
+void outbuf_free(struct out_buf *ob)
+{
+	free(ob->buffer);
+	ob->len = 0;
+}
+
 int get_depth(char *line)
 {
 	int depth = 0;
@@ -81,17 +102,21 @@ void set_list_nums(struct toc_item *headers, int num_headers)
 	}
 }
 
-void output_toc(struct toc_item *headers, int num_headers, int lflag)
+void output_toc(struct out_buf *ob, struct toc_item *headers, int num_headers, int lflag)
 {
 	printf("# Table of Contents\n");
 	for (int i = 0; i < num_headers; i++) {
 		for (int j = 0; j < headers[i].depth; j++) {
-			printf("\t");
+			outbuf_append(ob, "\t", 1);
 		}
 		if (lflag == 0) {
-			printf("%d. %s\n", headers[i].list_num, headers[i].contents);
+			char out[2 * strlen(headers[i].contents)];
+			size_t len = snprintf(out, sizeof(out), "%d. %s\n", headers[i].list_num, headers[i].contents);
+			outbuf_append(ob, out, len);
 		} else if (lflag == 1) {
-			printf("%d. [%s](#%s)\n", headers[i].list_num, headers[i].contents, headers[i].anchor);
+			char out[3 * strlen(headers[i].contents)];
+			size_t len = snprintf(out, sizeof(out), "%d. [%s](#%s)\n", headers[i].list_num, headers[i].contents, headers[i].anchor);
+			outbuf_append(ob, out, len);
 		}
 		free(headers[i].contents);
 		free(headers[i].anchor);
@@ -126,8 +151,11 @@ void process_file(FILE *fp, int lflag, int dflag)
 	free(line);
 
 	// output table of contents
+	struct out_buf ob = {NULL, 0};
 	set_list_nums(headers, num_headers);
-	output_toc(headers, num_headers, lflag);
+	output_toc(&ob, headers, num_headers, lflag);
+	write(STDOUT_FILENO, ob.buffer, ob.len);
+	outbuf_free(&ob);
 
 	free(headers);
 	return;
