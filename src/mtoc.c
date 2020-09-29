@@ -177,7 +177,7 @@ int main(int argc, char **argv)
 				wflag = 1;
 				break;
 			default:
-				fprintf(stderr, "Usage: %s [-ld] filename ...\n", argv[0]);
+				fprintf(stderr, "Usage: %s [-ldw] filename ...\n", argv[0]);
 				exit(EXIT_FAILURE);
 		}
 	}
