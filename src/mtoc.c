@@ -13,7 +13,7 @@ struct toc_item {
 void die(const char *s)
 {
 	perror(s);
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 struct out_buf {
