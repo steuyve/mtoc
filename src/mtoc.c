@@ -100,11 +100,15 @@ void output_toc(struct toc_item *headers, int num_headers, int lflag)
 int main(int argc, char **argv)
 {
 	int lflag = 0;
+	int dflag = 6;
 	int opt;
-	while ((opt = getopt(argc, argv, "l")) != -1) {
+	while ((opt = getopt(argc, argv, "ld:")) != -1) {
 		switch (opt) {
 			case 'l':
 				lflag = 1;
+				break;
+			case 'd':
+				dflag = atoi(optarg);
 				break;
 			default:
 				fprintf(stderr, "Usage: %s [-l] filename\n", argv[0]);
@@ -139,6 +143,8 @@ int main(int argc, char **argv)
 				headers = realloc(headers, num_items * sizeof(struct toc_item));
 				if (!headers) die("realloc");
 			}
+			int depth = get_depth(line);
+			if (depth + 1 > dflag) continue;
 			headers[num_headers].depth = get_depth(line);
 			headers[num_headers].contents = get_heading(line, linelen, headers[num_headers].depth);
 			headers[num_headers].anchor = gen_anchor(headers[num_headers].contents, linelen);
