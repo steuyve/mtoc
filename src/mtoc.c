@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
+int links = 0;
 
 struct toc_item {
 	char *contents;
@@ -94,14 +97,28 @@ void output_toc(struct toc_item *headers, int num_headers)
 
 int main(int argc, char **argv)
 {
+	int opt;
+	while ((opt = getopt(argc, argv, "l")) != -1) {
+		switch (opt) {
+			case 'l':
+				links = 1;
+				break;
+			default:
+				fprintf(stderr, "Usage: %s [-l] filename\n", argv[0]);
+				exit(EXIT_FAILURE);
+		}
+	}
+
+	/*
 	if (argc != 2) {
 		printf("error incorrect number of arguments: exactly one filename to process expected.");
 		return 1;
 	}
+	*/
 
-	printf("Opening file: %s...\n", argv[1]);
+	printf("Opening file: %s...\n", argv[optind]);
 	// read-in a file as input.
-	FILE *fp = fopen(argv[1], "r");
+	FILE *fp = fopen(argv[optind], "r");
 	if (!fp) die("fopen");
 
 	// finding the headers and levels of depth.
@@ -138,7 +155,7 @@ int main(int argc, char **argv)
 	output_toc(headers, num_headers);
 
 	// close the file.
-	printf("Closing file: %s...\n", argv[1]);
+	printf("Closing file: %s...\n", argv[optind]);
 	fclose(fp);
 	free(headers);
 	exit(EXIT_SUCCESS);
