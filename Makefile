@@ -6,3 +6,6 @@ mtoc: src/mtoc.c
 
 debug: src/mtoc.c
 	$(CC) -g -o bin/$@ $< $(CLFAGS)
+
+profile: src/mtoc.c
+	$(CC) -pg -o bin/$@ $< $(CLFAGS)
