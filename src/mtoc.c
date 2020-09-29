@@ -165,19 +165,19 @@ int main(int argc, char **argv)
 	int dflag = 6;
 	int wflag = 0;
 	int opt;
-	while ((opt = getopt(argc, argv, "ld:")) != -1) {
+	while ((opt = getopt(argc, argv, "lwd:")) != -1) {
 		switch (opt) {
 			case 'l':
 				lflag = 1;
 				break;
-			case 'd':
-				dflag = atoi(optarg);
-				break;
 			case 'w':
 				wflag = 1;
 				break;
+			case 'd':
+				dflag = atoi(optarg);
+				break;
 			default:
-				fprintf(stderr, "Usage: %s [-ldw] filename ...\n", argv[0]);
+				fprintf(stderr, "Usage: %s [-lwd] filename ...\n", argv[0]);
 				exit(EXIT_FAILURE);
 		}
 	}
@@ -190,7 +190,20 @@ int main(int argc, char **argv)
 		// process the file.
 		struct out_buf ob = {NULL, 0};
 		process_file(fp, &ob, lflag, dflag);
-		write(STDOUT_FILENO, ob.buffer, ob.len);
+		if (wflag == 0) {
+			write(STDOUT_FILENO, ob.buffer, ob.len);
+		} else if (wflag == 1) {
+			FILE *tmp_file = fopen("tmp", "a");
+			if (!tmp_file) die("fopen");
+			write(fileno(tmp_file), ob.buffer, ob.len);
+			fprintf(tmp_file, "\n\n");
+			rewind(fp);
+			char c;
+			while ((c = fgetc(fp)) != EOF) {
+				fputc(c, tmp_file);
+			}
+			fclose(tmp_file);
+		}
 		outbuf_free(&ob);
 
 		// close the file.
