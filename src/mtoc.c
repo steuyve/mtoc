@@ -165,6 +165,7 @@ int main(int argc, char **argv)
 	// parse arguments.
 	int lflag = 0;
 	int dflag = 6;
+	int wflag = 0;
 	int opt;
 	while ((opt = getopt(argc, argv, "ld:")) != -1) {
 		switch (opt) {
@@ -173,6 +174,9 @@ int main(int argc, char **argv)
 				break;
 			case 'd':
 				dflag = atoi(optarg);
+				break;
+			case 'w':
+				wflag = 1;
 				break;
 			default:
 				fprintf(stderr, "Usage: %s [-ld] filename ...\n", argv[0]);
