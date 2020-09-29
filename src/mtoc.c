@@ -82,14 +82,18 @@ void set_list_nums(struct toc_item *headers, int num_headers)
 	}
 }
 
-void output_toc(struct toc_item *headers, int num_headers)
+void output_toc(struct toc_item *headers, int num_headers, int lflag)
 {
 	printf("# Table of Contents\n");
 	for (int i = 0; i < num_headers; i++) {
 		for (int j = 0; j < headers[i].depth; j++) {
 			printf("\t");
 		}
-		printf("%d. [%s](#%s)\n", headers[i].list_num, headers[i].contents, headers[i].anchor);
+		if (lflag == 0) {
+			printf("%d. %s\n", headers[i].list_num, headers[i].contents);
+		} else if (lflag == 1) {
+			printf("%d. [%s](#%s)\n", headers[i].list_num, headers[i].contents, headers[i].anchor);
+		}
 	}
 }
 
@@ -151,7 +155,7 @@ int main(int argc, char **argv)
 
 	// output table of contents
 	set_list_nums(headers, num_headers);
-	output_toc(headers, num_headers);
+	output_toc(headers, num_headers, lflag);
 
 	// close the file.
 	printf("Closing file: %s...\n", argv[optind]);
