@@ -4,6 +4,7 @@
 
 struct toc_item {
 	char *contents;
+	char *anchor;
 	int depth;
 	int list_num;
 };
@@ -38,6 +39,23 @@ char *get_heading(char *line, ssize_t length, int depth)
 	return heading;
 }
 
+char *gen_anchor(char *heading, ssize_t length)
+{
+	char *anchor = malloc(length * sizeof(char));
+	int i;
+	while (heading[i] != '\0') {
+		if (heading[i] == ' ') {
+			anchor[i] = '-';
+		} else if (heading[i] >= 'A' && heading[i] <= 'Z') {
+			anchor[i] = heading[i] + 32;
+		}else {
+			anchor[i] = heading[i];
+		}
+		i++;
+	}
+	return anchor;
+}
+
 void show_item(struct toc_item *item)
 {
 	printf("Depth: %d; Contents: %s", item->depth, item->contents);
@@ -70,7 +88,7 @@ void output_toc(struct toc_item *headers, int num_headers)
 		for (int j = 0; j < headers[i].depth; j++) {
 			printf("\t");
 		}
-		printf("%d. %s\n", headers[i].list_num, headers[i].contents);
+		printf("%d. [%s](#%s)\n", headers[i].list_num, headers[i].contents, headers[i].anchor);
 	}
 }
 
@@ -101,23 +119,19 @@ int main(int argc, char **argv)
 				headers = realloc(headers, num_items * sizeof(struct toc_item));
 				if (!headers) die("realloc");
 			}
-			struct toc_item *item = malloc(sizeof(struct toc_item));
-			if (!item) die("malloc");
-			item->depth = get_depth(line);
-			item->contents = malloc(linelen * sizeof(char));
-			if (!(item->contents)) die("malloc");
-			item->contents = get_heading(line, linelen, item->depth);
-			headers[num_headers] = *item;
+			headers[num_headers].depth = get_depth(line);
+			headers[num_headers].contents = get_heading(line, linelen, headers[num_headers].depth);
+			headers[num_headers].anchor = gen_anchor(headers[num_headers].contents, linelen);
 			num_headers++;
 		}
 	}
 	free(line);
 
-	printf("Found the following header lines:\n");
-	for (int i = 0; i < num_headers; i++) {
-		show_item(&headers[i]);
-		printf("\n");
-	}
+	//printf("Found the following header lines:\n");
+	//for (int i = 0; i < num_headers; i++) {
+	//	show_item(&headers[i]);
+	//	printf("\n");
+	//}
 
 	// output table of contents
 	set_list_nums(headers, num_headers);
