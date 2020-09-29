@@ -141,5 +141,5 @@ int main(int argc, char **argv)
 	printf("Closing file: %s...\n", argv[1]);
 	fclose(fp);
 	free(headers);
-	return 0;
+	exit(EXIT_SUCCESS);
 }
