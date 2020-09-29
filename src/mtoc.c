@@ -27,8 +27,7 @@ int get_depth(char *line)
 
 char *get_heading(char *line, ssize_t length, int depth)
 {
-	char *heading;
-	heading = malloc((length - depth - 2) * sizeof(char));
+	char *heading = malloc((length - depth - 2) * sizeof(char));
 	if (!heading) die("malloc");
 	heading = strcpy(heading, line + depth + 2);
 	length = length - depth - 3;
@@ -42,6 +41,7 @@ char *get_heading(char *line, ssize_t length, int depth)
 char *gen_anchor(char *heading, ssize_t length)
 {
 	char *anchor = malloc(length * sizeof(char));
+	if (!anchor) die("malloc");
 	int i;
 	while (heading[i] != '\0') {
 		if (heading[i] == ' ') {
