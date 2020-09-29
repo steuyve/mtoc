@@ -5,6 +5,7 @@
 struct toc_item {
 	char *contents;
 	int depth;
+	int list_num;
 };
 
 void die(const char *s)
@@ -42,6 +43,26 @@ void show_item(struct toc_item *item)
 	printf("Depth: %d; Contents: %s", item->depth, item->contents);
 }
 
+void set_list_nums(struct toc_item *headers, int num_headers)
+{
+	int levels_last[10];
+	int num = 0;
+	int prev_depth = headers[0].depth;
+	for (int i = 0; i < num_headers; i++) {
+		if (headers[i].depth > prev_depth) {
+			levels_last[prev_depth] = num;
+			num = 0;
+			prev_depth = headers[i].depth;
+		} else if (headers[i].depth < prev_depth) {
+			num = levels_last[headers[i].depth];
+			prev_depth = headers[i].depth;
+		}
+		num++;
+		headers[i].list_num = num;
+		levels_last[headers[i].depth] = num;
+	}
+}
+
 void output_toc(struct toc_item *headers, int num_headers)
 {
 	printf("# Table of Contents\n");
@@ -49,7 +70,7 @@ void output_toc(struct toc_item *headers, int num_headers)
 		for (int j = 0; j < headers[i].depth; j++) {
 			printf("\t");
 		}
-		printf("%d. %s\n", (i + 1), headers[i].contents);
+		printf("%d. %s\n", headers[i].list_num, headers[i].contents);
 	}
 }
 
@@ -99,6 +120,7 @@ int main(int argc, char **argv)
 	}
 
 	// output table of contents
+	set_list_nums(headers, num_headers);
 	output_toc(headers, num_headers);
 
 	// close the file.
