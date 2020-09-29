@@ -193,16 +193,18 @@ int main(int argc, char **argv)
 		if (wflag == 0) {
 			write(STDOUT_FILENO, ob.buffer, ob.len);
 		} else if (wflag == 1) {
-			FILE *tmp_file = fopen("tmp", "a");
-			if (!tmp_file) die("fopen");
-			write(fileno(tmp_file), ob.buffer, ob.len);
-			fprintf(tmp_file, "\n\n");
+			char name[strlen(argv[index]) + 5];
+			snprintf(name, sizeof(name), "%s.toc", argv[index]);
+			FILE *toc_file = fopen(name, "a");
+			if (!toc_file) die("fopen");
+			write(fileno(toc_file), ob.buffer, ob.len);
+			fprintf(toc_file, "\n\n");
 			rewind(fp);
 			char c;
 			while ((c = fgetc(fp)) != EOF) {
-				fputc(c, tmp_file);
+				fputc(c, toc_file);
 			}
-			fclose(tmp_file);
+			fclose(toc_file);
 		}
 		outbuf_free(&ob);
 
