@@ -51,7 +51,7 @@ char *get_heading(char *line, ssize_t length, int depth)
 {
 	char *heading = malloc((length - depth - 1) * sizeof(char));
 	if (!heading) die("malloc");
-	heading = strcpy(heading, line + depth + 2);
+	heading = strncpy(heading, line + depth + 2, length - depth - 2);
 	length = length - depth - 3;
 	while (heading[length] == '\n' || heading[length] == ' ' || heading[length] == '\t') {
 		heading[length] = '\0';
