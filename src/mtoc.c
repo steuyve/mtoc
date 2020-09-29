@@ -57,11 +57,6 @@ char *gen_anchor(char *heading, ssize_t length)
 	return anchor;
 }
 
-void show_item(struct toc_item *item)
-{
-	printf("Depth: %d; Contents: %s", item->depth, item->contents);
-}
-
 void set_list_nums(struct toc_item *headers, int num_headers)
 {
 	int levels_last[10];
