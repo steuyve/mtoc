@@ -8,6 +8,7 @@ struct toc_item {
 	char *anchor;
 	int depth;
 	int list_num;
+	int contents_length;
 };
 
 void die(const char *s)
@@ -38,6 +39,7 @@ void set_heading(struct toc_item *item, char *line, ssize_t length, int depth)
 	}
 
 	item->contents = heading;
+	item->contents_length = length;
 }
 
 char *gen_anchor(char *heading, ssize_t length)
@@ -119,6 +121,7 @@ void process_file(FILE *fp, int lflag, int dflag)
 			if (depth + 1 > dflag) continue;
 			headers[num_headers].depth = depth;
 			set_heading(&headers[num_headers], line, linelen, headers[num_headers].depth);
+			printf("%d: %s\n", headers[num_headers].contents_length, headers[num_headers].contents);
 			headers[num_headers].anchor = gen_anchor(headers[num_headers].contents, linelen);
 			num_headers++;
 		}
