@@ -111,7 +111,7 @@ void process_file(FILE *fp, int lflag, int dflag)
 			}
 			int depth = get_depth(line);
 			if (depth + 1 > dflag) continue;
-			headers[num_headers].depth = get_depth(line);
+			headers[num_headers].depth = depth;
 			headers[num_headers].contents = get_heading(line, linelen, headers[num_headers].depth);
 			headers[num_headers].anchor = gen_anchor(headers[num_headers].contents, linelen);
 			num_headers++;
