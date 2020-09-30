@@ -196,10 +196,10 @@ int main(int argc, char **argv)
 		} else if (wflag == 1) {
 			char name[strlen(argv[index]) + 5];
 			snprintf(name, sizeof(name), "%s.toc", argv[index]);
-			FILE *toc_file = fopen(name, "a");
+			FILE *toc_file = fopen(name, "w");
 			if (!toc_file) die("fopen");
 			write(fileno(toc_file), ob.buffer, ob.len);
-			fprintf(toc_file, "\n\n");
+			fprintf(toc_file, "\n");
 			rewind(fp);
 			char c;
 			while ((c = fgetc(fp)) != EOF) {
