@@ -166,6 +166,8 @@ int main(int argc, char **argv)
 	int dflag = 6;
 	int wflag = 0;
 	int opt;
+	extern int optind;
+	extern char *optarg;
 	while ((opt = getopt(argc, argv, "lwd:")) != -1) {
 		switch (opt) {
 			case 'l':
