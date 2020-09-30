@@ -24,7 +24,7 @@ struct out_buf {
 
 void outbuf_append(struct out_buf *ob, const char *s, size_t length)
 {
-	char *new = realloc(ob->buffer, ob->len + length);
+	char *new = (char *)realloc(ob->buffer, ob->len + length);
 	if (!new) die("realloc");
 
 	memcpy(&new[ob->len], s, length);
@@ -50,7 +50,7 @@ int get_depth(char *line)
 
 char *get_heading(char *line, ssize_t length, int depth)
 {
-	char *heading = malloc((length - depth - 1) * sizeof(char));
+	char *heading = (char *)malloc((length - depth - 1) * sizeof(char));
 	if (!heading) die("malloc");
 	heading = strncpy(heading, line + depth + 2, length - depth - 2);
 	length = length - depth - 3;
@@ -64,7 +64,7 @@ char *get_heading(char *line, ssize_t length, int depth)
 
 char *gen_anchor(char *heading, ssize_t length)
 {
-	char *anchor = malloc(length * sizeof(char));
+	char *anchor = (char *)malloc(length * sizeof(char));
 	if (!anchor) die("malloc");
 	for (int j = 0; j < length; j++) {
 		anchor[j] = '\0';
@@ -127,7 +127,7 @@ void process_file(FILE *fp, struct out_buf *ob, int lflag, int dflag)
 {
 	// finding the headers and levels of depth.
 	size_t num_items = 32;
-	struct toc_item *headers = malloc(num_items * sizeof(struct toc_item));
+	struct toc_item *headers = (struct toc_item *)malloc(num_items * sizeof(struct toc_item));
 	if (!headers) die("malloc");
 	size_t num_headers = 0;
 	char *line = NULL;
@@ -137,7 +137,7 @@ void process_file(FILE *fp, struct out_buf *ob, int lflag, int dflag)
 		if (line[0] == '#') {
 			if (num_headers == num_items) {
 				num_items *= 2;
-				headers = realloc(headers, num_items * sizeof(struct toc_item));
+				headers = (struct toc_item *)realloc(headers, num_items * sizeof(struct toc_item));
 				if (!headers) die("realloc");
 			}
 			int depth = get_depth(line);
