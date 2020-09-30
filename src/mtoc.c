@@ -143,7 +143,7 @@ void process_file(FILE *fp, struct out_buf *ob, int lflag, int dflag)
 			if (depth + 1 > dflag) continue;
 			headers[num_headers].depth = depth;
 			headers[num_headers].contents = get_heading(line, linelen, headers[num_headers].depth);
-			headers[num_headers].anchor = gen_anchor(headers[num_headers].contents, strlen(headers[num_headers].contents));
+			headers[num_headers].anchor = gen_anchor(headers[num_headers].contents, linelen);
 			num_headers++;
 		}
 	}
