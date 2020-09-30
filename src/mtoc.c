@@ -160,6 +160,7 @@ void process_file(FILE *fp, struct out_buf *ob, int lflag, int dflag)
 
 int main(int argc, char **argv)
 {
+	if (argc == 1) fprintf(stderr, "Usage: %s [-lwd] filename ...\n", argv[0]);
 	// parse arguments.
 	int lflag = 0;
 	int dflag = 6;
