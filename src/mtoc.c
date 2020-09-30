@@ -82,12 +82,12 @@ char *gen_anchor(char *heading, ssize_t length)
 	return anchor;
 }
 
-void set_list_nums(struct toc_item *headers, int num_headers)
+void set_list_nums(struct toc_item *headers, size_t num_headers)
 {
 	int levels_last[10];
 	int num = 0;
 	int prev_depth = headers[0].depth;
-	for (int i = 0; i < num_headers; i++) {
+	for (size_t i = 0; i < num_headers; i++) {
 		if (headers[i].depth > prev_depth) {
 			levels_last[prev_depth] = num;
 			num = 0;
@@ -102,9 +102,9 @@ void set_list_nums(struct toc_item *headers, int num_headers)
 	}
 }
 
-void output_toc(struct out_buf *ob, struct toc_item *headers, int num_headers, int lflag)
+void output_toc(struct out_buf *ob, struct toc_item *headers, size_t num_headers, int lflag)
 {
-	for (int i = 0; i < num_headers; i++) {
+	for (size_t i = 0; i < num_headers; i++) {
 		for (int j = 0; j < headers[i].depth; j++) {
 			outbuf_append(ob, "\t", 1);
 		}
@@ -128,7 +128,7 @@ void process_file(FILE *fp, struct out_buf *ob, int lflag, int dflag)
 	size_t num_items = 32;
 	struct toc_item *headers = malloc(num_items * sizeof(struct toc_item));
 	if (!headers) die("malloc");
-	int num_headers = 0;
+	size_t num_headers = 0;
 	char *line = NULL;
 	size_t linecap = 0;
 	ssize_t linelen;
