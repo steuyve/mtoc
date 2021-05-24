@@ -1,4 +1,4 @@
-CC=gcc
+CC=${ccomp}
 CFLAGS=-Wall -Wextra -pedantic -std=c99
 
 mtoc: src/mtoc.c
